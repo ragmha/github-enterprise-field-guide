@@ -8,117 +8,245 @@
 <link rel="icon" href="data:,">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="guide">
 <header>
   <h1>GitHub Enterprise field guide</h1>
-  <p class="lede">A pre-reading checklist for turning GitHub into a governed service: who owns it, how people get in, what they can do, what it costs and how you prove it.</p>
+  <p class="lede">Answer yes or no to see whether you're on track to run GitHub as a governed service: who owns it, how people get in, what they can do, what it costs and how you prove it. Every recommendation links to the official docs, which stay the source of truth.</p>
   <p class="meta">Checked against official docs on 7 Nov 2026 · <a href="ledger.html">Evidence ledger</a></p>
-  <div class="progress"><span id="bar"></span></div>
-  <p class="meta"><span id="count">0</span> of <span id="total">0</span> checked · saved on this device · <button id="reset" type="button">Reset</button></p>
 </header>
 
+<aside>
+<div class="prog">
+<div class="progress"><span id="bar"></span></div>
+<p class="meta"><span id="count">0</span> of <span id="total">0</span> answered · <span id="todo">0</span> to act on · saved on this device · <button id="reset" type="button">Reset</button></p>
+</div>
 <nav aria-label="Topics">
   <a href="#platform">Platform</a><a href="#identity">Identity</a><a href="#roles">Roles</a><a href="#external">External users</a><a href="#lifecycle">On/offboarding</a><a href="#audit">Audit</a><a href="#licensing">Licensing</a><a href="#cost">Cost</a><a href="#itsm">ITSM</a><a href="#rollout">Rollout</a>
 </nav>
+</aside>
 
 <main>
 <details id="platform" open>
 <summary><span class="n">1</span>Choose the platform and account type</summary>
+<div class="body">
 <p>The biggest decision, and the hardest to reverse. Answer it first because identity, external access and migration effort all follow from it.</p>
-<a href="assets/platform-decision.svg"><img src="assets/platform-decision.svg" alt="Decision path from data residency to self-hosting to managed users to personal accounts"></a>
 <div class="compare">
   <section><h3>GHEC, personal accounts</h3><p>Users sign in with their own github.com account. You add SAML SSO at the enterprise or organization level. SCIM is available only per organization. You can't control usernames.</p><p class="tag">Best when people must also work in open source with one account.</p></section>
   <section><h3>GHEC, managed users (EMU)</h3><p>Your IdP creates every account (<code>handle_shortcode</code>) and suspends it on removal. SAML, or OIDC with Conditional Access when the IdP is Entra ID. Managed users can't contribute outside the enterprise.</p><p class="tag">Only for a new enterprise, so moving means migration.</p></section>
   <section><h3>GHE.com (data residency)</h3><p>A managed-users enterprise on its own GHE.com subdomain, with data stored in the EU, Australia, US or Japan.</p><p class="tag">Choose it when data location is a hard requirement.</p></section>
   <section><h3>GitHub Enterprise Server</h3><p>You run it on your own infrastructure: upgrades, backups, HA and runners. SAML with SCIM is generally available from 3.17. Managed users don't exist on Server, and cloud services such as Copilot stay in the cloud.</p><p class="tag">Choose it when it must be self-hosted.</p></section>
 </div>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="p1"><span>Do we have a data-residency or self-hosting requirement written down, or only a preference?</span></label></li>
-  <li><label><input type="checkbox" data-id="p2"><span>Do our people need to work in public open source with the same account?</span></label></li>
-  <li><label><input type="checkbox" data-id="p3"><span>Does every user, including external users, have an identity in our IdP?</span></label></li>
-  <li><label><input type="checkbox" data-id="p4"><span>If we choose managed users, have we sized the migration: repos, Actions runners, integrations and personal tokens?</span></label></li>
-  <li><label><input type="checkbox" data-id="p5"><span>Do we know which enterprise and organizations we have today, and whether any sit outside the enterprise?</span></label></li>
+<a href="assets/platform-decision.svg"><img src="assets/platform-decision.svg" alt="Decision path from data residency to self-hosting to managed users to personal accounts"></a>
+<ul class="qs">
+  <li data-id="p1"><p class="q">Do we have a written requirement for data residency or self-hosting? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/data-residency/about-github-enterprise-cloud-with-data-residency">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="p1" value="y"><span>Yes</span></label><label><input type="radio" name="p1" value="n"><span>No</span></label></div>
+    <p class="a if-y fork"><b>Leads to:</b> Shortlist GHE.com for data residency, or GitHub Enterprise Server for self-hosting. Ask the requirement's owner to confirm it before you commit.</p>
+    <p class="a if-n ok"><b>On track.</b> Stay on github.com, then use the next questions to choose between personal accounts and managed users.</p></li>
+  <li data-id="p2"><p class="q">Do people need to contribute to public open source with their work account? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/understanding-iam-for-enterprises/abilities-and-restrictions-of-managed-user-accounts">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="p2" value="y"><span>Yes</span></label><label><input type="radio" name="p2" value="n"><span>No</span></label></div>
+    <p class="a if-y fork"><b>Leads to:</b> That favours personal accounts. Managed users can't contribute outside the enterprise and only have read access to public GitHub. If only a few people need it, they can keep a separate personal account instead.</p>
+    <p class="a if-n ok"><b>On track.</b> Managed users stay an option, giving you full control over accounts and usernames.</p></li>
+  <li data-id="p3"><p class="q">Does every user, including external users, have an identity in our IdP? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/concepts/identity-and-access-management/enterprise-managed-users">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="p3" value="y"><span>Yes</span></label><label><input type="radio" name="p3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Managed users and SCIM are both possible, because every account can be created and removed from the IdP.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Fix this first. Give external users a guest or member account in Entra ID. Without one, you can't apply SSO, review their access or remove them automatically.</p></li>
+  <li data-id="p4"><p class="q">Have we sized the effort of moving to managed users: repositories, runners, integrations and tokens? <a class="doc" href="https://docs.github.com/en/migrations/using-github-enterprise-importer/migrating-between-github-products/about-migrations-between-github-products">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="p4" value="y"><span>Yes</span></label><label><input type="radio" name="p4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Remember what the importer doesn't carry over: Actions secrets and runners, apps, packages, team access and audit logs.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Size it before deciding. Managed users need a new enterprise, and the importer doesn't carry over Actions secrets and runners, apps, packages, team access or audit logs.</p></li>
+  <li data-id="p5"><p class="q">Are all our organizations inside one enterprise account? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-accounts-and-repositories/managing-organizations-in-your-enterprise/adding-organizations-to-your-enterprise">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="p5" value="y"><span>Yes</span></label><label><input type="radio" name="p5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> You have one place to apply policies, SSO and billing.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> List every organization first. Ones outside the enterprise skip its policies, SSO and billing. Invite them in, or plan to migrate them.</p></li>
 </ul>
 <p class="warn"><b>Watch out:</b> you can't switch an existing enterprise to managed users. It means creating a new enterprise and migrating into it, so plan it as a project.</p>
+</div>
 </details>
 
 <details id="identity">
 <summary><span class="n">2</span>Identity: sign-in and provisioning</summary>
+<div class="body">
 <p>Two separate controls. <b>SSO</b> decides who can sign in. <b>SCIM</b> decides who exists and in which groups. Without SCIM, removing someone in the IdP does not remove them from GitHub.</p>
 <a href="assets/identity-flow.svg"><img src="assets/identity-flow.svg" alt="Entra ID to GitHub enterprise app, then SSO and SCIM, then organizations, teams and repositories"></a>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="i1"><span>Assign Entra <b>groups</b> to the GitHub enterprise application, not individual users.</span></label></li>
-  <li><label><input type="checkbox" data-id="i2"><span>Check the Entra licence: group-based app assignment needs Entra ID P1. Access reviews need P2 or ID Governance.</span></label></li>
-  <li><label><input type="checkbox" data-id="i3"><span>Personal accounts: decide whether SAML sits at the enterprise or the organization level, and which organizations get SCIM.</span></label></li>
-  <li><label><input type="checkbox" data-id="i4"><span>Managed users with Entra: choose OIDC to get Conditional Access IP checks. One Entra tenant supports one OIDC enterprise.</span></label></li>
-  <li><label><input type="checkbox" data-id="i5"><span>Store SSO recovery codes and keep a break-glass owner path.</span></label></li>
-  <li><label><input type="checkbox" data-id="i6"><span>Link teams to Entra groups so membership follows the IdP: team sync with personal accounts, SCIM groups with managed users. Team sync doesn't create accounts, and the team must already exist.</span></label></li>
+<ul class="qs">
+  <li data-id="i1"><p class="q">Is the GitHub app in Entra assigned to groups rather than individual users? <a class="doc" href="https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/assign-user-or-group-access-portal">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i1" value="y"><span>Yes</span></label><label><input type="radio" name="i1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Assign groups. Access then follows group membership and reviews happen in one place. Group-based assignment needs Entra ID P1 or above.</p></li>
+  <li data-id="i2"><p class="q">Do we have the Entra licences we need: P1 for groups and provisioning, and ID Governance for access reviews? <a class="doc" href="https://learn.microsoft.com/en-us/entra/id-governance/licensing-fundamentals">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i2" value="y"><span>Yes</span></label><label><input type="radio" name="i2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Check before designing around them. Without P1 there's no group-based assignment or app provisioning. Access reviews need ID Governance or Entra Suite; only some of their capabilities work with P2.</p></li>
+  <li data-id="i3"><p class="q">Is SCIM planned, so that removing someone in the IdP removes them from GitHub? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-saml-single-sign-on-for-your-organization/about-scim-for-organizations">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i3" value="y"><span>Yes</span></label><label><input type="radio" name="i3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> From then on, invite and remove people only through the IdP. Manual invites leave accounts unlinked and aren't removed automatically.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Plan it. Without SCIM, removing someone in the IdP doesn't remove them from GitHub, and tokens they authorised keep working. With personal accounts, SCIM is per organization and needs an OAuth app authorised by a dedicated owner account, which uses a licence.</p></li>
+  <li data-id="i4"><p class="q">Personal accounts: have we decided whether SAML sits on the enterprise or on each organization? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/using-saml-for-enterprise-iam/deciding-whether-to-configure-saml-for-your-enterprise-or-your-organizations">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i4" value="y"><span>Yes</span></label><label><input type="radio" name="i4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Remember that enterprise SAML overrides organization SAML, and organization SAML doesn't protect internal repositories.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Decide it early. Enterprise SAML covers every organization and overrides organization settings. Organization SAML doesn't protect internal repositories. Confirm with GitHub how SCIM fits your choice.</p></li>
+  <li data-id="i5"><p class="q">Managed users with Entra: are we using OIDC so Conditional Access applies? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/configuring-authentication-for-enterprise-managed-users/about-support-for-your-idps-conditional-access-policy">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i5" value="y"><span>Yes</span></label><label><input type="radio" name="i5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Note that one Entra tenant supports only one OIDC enterprise.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Consider OIDC. It's available only with Entra ID and lets GitHub apply your Conditional Access IP conditions.</p></li>
+  <li data-id="i6"><p class="q">Are the SSO recovery codes stored safely, with a break-glass owner path? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/managing-recovery-codes-for-your-enterprise/downloading-your-enterprise-accounts-single-sign-on-recovery-codes">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i6" value="y"><span>Yes</span></label><label><input type="radio" name="i6" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Download and store them now. They let an owner get in when the IdP is down or misconfigured.</p></li>
+  <li data-id="i7"><p class="q">Are GitHub teams linked to Entra groups, so membership follows the IdP? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/using-saml-for-enterprise-iam/managing-team-synchronization-for-organizations-in-your-enterprise">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="i7" value="y"><span>Yes</span></label><label><input type="radio" name="i7" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Link them: team sync with personal accounts, SCIM groups with managed users. Team sync doesn't create accounts, and Entra doesn't provision nested groups, so keep groups flat.</p></li>
 </ul>
 <p class="warn"><b>Watch out:</b> with SCIM in place, invite and remove people <i>only</i> from the IdP. Manual invites leave accounts unlinked and break automatic removal. Organization-level SCIM also depends on an OAuth app authorised by a dedicated owner account, which uses a licence.</p>
+</div>
 </details>
 
 <details id="roles">
 <summary><span class="n">3</span>Roles and authorization</summary>
+<div class="body">
 <p>A role catalogue is a short table: role, layer, what it allows, who approves it and how often it's reviewed.</p>
 <a href="assets/role-layers.svg"><img src="assets/role-layers.svg" alt="Nested layers: enterprise, organization, team, repository with their roles"></a>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="r1"><span>Name at least two enterprise owners, and keep the role for platform admins only.</span></label></li>
-  <li><label><input type="checkbox" data-id="r2"><span>Set organization base permissions low (none or read). Grant more through teams.</span></label></li>
-  <li><label><input type="checkbox" data-id="r3"><span>Map each catalogue role to one Entra group, then to one GitHub team or role.</span></label></li>
-  <li><label><input type="checkbox" data-id="r4"><span>Define repository owner (admin), maintainer (maintain), contributor (write) and reader (read).</span></label></li>
-  <li><label><input type="checkbox" data-id="r5"><span>Decide whether custom organization or repository roles are needed. Enterprise custom roles are in preview.</span></label></li>
+<ul class="qs">
+  <li data-id="r1"><p class="q">Do we have at least two named enterprise owners, with the role kept to platform admins? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-accounts-and-repositories/managing-roles-in-your-enterprise/abilities-of-roles">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r1" value="y"><span>Yes</span></label><label><input type="radio" name="r1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Name two, so losing one person doesn't lock you out, and keep everyone else out. Owners control every setting and organization.</p></li>
+  <li data-id="r2"><p class="q">Is the organization base permission set to none or read? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/setting-base-permissions-for-an-organization">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r2" value="y"><span>Yes</span></label><label><input type="radio" name="r2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Grant anything more through teams.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Lower it. Base permission applies to every member in every repository. Grant more through teams.</p></li>
+  <li data-id="r3"><p class="q">Does each role in the catalogue map to one Entra group and one GitHub team or role? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/using-saml-for-enterprise-iam/managing-team-synchronization-for-organizations-in-your-enterprise">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r3" value="y"><span>Yes</span></label><label><input type="radio" name="r3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Map them one to one. Requests then name a role, and reviews and removal happen per group.</p></li>
+  <li data-id="r4"><p class="q">Have we defined who is owner, maintainer, contributor and reader on a repository? <a class="doc" href="https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/repository-roles-for-an-organization">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r4" value="y"><span>Yes</span></label><label><input type="radio" name="r4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Start from the five built-in roles: read, triage, write, maintain and admin.</p></li>
+  <li data-id="r5"><p class="q">Do the built-in roles cover our needs? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/about-custom-repository-roles">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r5" value="y"><span>Yes</span></label><label><input type="radio" name="r5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Fewer roles are easier to review.</p>
+    <p class="a if-n fork"><b>Leads to:</b> Use custom repository or organization roles. Enterprise custom roles are still in preview, so don't depend on them yet.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="external">
 <summary><span class="n">4</span>External users</summary>
+<div class="body">
 <p>Partners and contractors are usually the riskiest group: they're hard to identify, hard to review and easy to forget.</p>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="e1"><span>Every external user has a corporate identity in the IdP (member or guest), a named sponsor and an expiry date.</span></label></li>
-  <li><label><input type="checkbox" data-id="e2"><span>Personal accounts: outside collaborators on private or internal repos each use a licence.</span></label></li>
-  <li><label><input type="checkbox" data-id="e3"><span>Managed users: use the guest collaborator role for vendors. Guests see internal repos only in organizations they belong to.</span></label></li>
-  <li><label><input type="checkbox" data-id="e4"><span>Expiry triggers removal automatically, with renewal requested through the same ITSM flow.</span></label></li>
-  <li><label><input type="checkbox" data-id="e5"><span>Decide whether partner work lives in its own organization or teams.</span></label></li>
+<ul class="qs">
+  <li data-id="e1"><p class="q">Does every external user have an IdP identity, a named sponsor and an expiry date? <a class="doc" href="https://learn.microsoft.com/en-us/entra/id-governance/entitlement-management-overview">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="e1" value="y"><span>Yes</span></label><label><input type="radio" name="e1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Add all three. Entra access packages can set approvals and an expiry date for guests.</p></li>
+  <li data-id="e2"><p class="q">Personal accounts: do our licence numbers include outside collaborators? <a class="doc" href="https://docs.github.com/en/billing/reference/github-license-users">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="e2" value="y"><span>Yes</span></label><label><input type="radio" name="e2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Count them. Outside collaborators on private or internal repositories each use a licence.</p></li>
+  <li data-id="e3"><p class="q">Managed users: do vendors get the guest collaborator role? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-accounts-and-repositories/managing-users-in-your-enterprise/enabling-guest-collaborators">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="e3" value="y"><span>Yes</span></label><label><input type="radio" name="e3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Guests see internal repositories only in organizations where they're members.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Use it. A regular managed user in any organization can see every internal repository in the enterprise. A guest sees them only in organizations where they're a member.</p></li>
+  <li data-id="e4"><p class="q">Does access end automatically when an external user's expiry date passes? <a class="doc" href="https://learn.microsoft.com/en-us/entra/id-governance/entitlement-management-overview">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="e4" value="y"><span>Yes</span></label><label><input type="radio" name="e4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Automate it. Let the Entra assignment expire, let provisioning remove access, and treat renewal as a new request.</p></li>
+  <li data-id="e5"><p class="q">Have we decided whether partner work lives in its own organization or in teams? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/concepts/enterprise-best-practices/organize-work">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="e5" value="y"><span>Yes</span></label><label><input type="radio" name="e5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Decide it. A separate organization isolates partner access and settings. Teams are simpler when partners work alongside your own staff.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="lifecycle">
 <summary><span class="n">5</span>On- and offboarding</summary>
+<div class="body">
 <a href="assets/access-lifecycle.svg"><img src="assets/access-lifecycle.svg" alt="Eight steps from ITSM request through approvals, Entra group change, provisioning, evidence, review and removal"></a>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="l1"><span>Joiner: the request names the role from the catalogue, not a list of repos.</span></label></li>
-  <li><label><input type="checkbox" data-id="l2"><span>Mover: a role change swaps groups, so old access drops automatically.</span></label></li>
-  <li><label><input type="checkbox" data-id="l3"><span>Leaver: HR or contract end disables the IdP account, and SCIM suspends or removes the GitHub access.</span></label></li>
-  <li><label><input type="checkbox" data-id="l4"><span>Automations and pipelines run on GitHub Apps or service identities, not a person's token.</span></label></li>
-  <li><label><input type="checkbox" data-id="l5"><span>Inactivity rule agreed, for example dormant users reviewed every quarter.</span></label></li>
+<ul class="qs">
+  <li data-id="l1"><p class="q">Does a joiner's request name a role from the catalogue, not a list of repositories?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="l1" value="y"><span>Yes</span></label><label><input type="radio" name="l1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Request roles instead. A list of repositories can't be reviewed or removed consistently.</p></li>
+  <li data-id="l2"><p class="q">When someone changes role, does their old access drop automatically?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="l2" value="y"><span>Yes</span></label><label><input type="radio" name="l2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Swap groups instead of adding to them. Old access then goes with the old group.</p></li>
+  <li data-id="l3"><p class="q">When someone leaves, does disabling their IdP account remove their GitHub access? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-saml-single-sign-on-for-your-organization/about-scim-for-organizations">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="l3" value="y"><span>Yes</span></label><label><input type="radio" name="l3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Only SCIM does that. Without it, leavers keep organization membership and authorised tokens until someone removes them by hand.</p></li>
+  <li data-id="l4"><p class="q">Do automations and pipelines run on GitHub Apps rather than a person's token? <a class="doc" href="https://docs.github.com/en/apps/creating-github-apps/about-creating-github-apps/deciding-when-to-build-a-github-app">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="l4" value="y"><span>Yes</span></label><label><input type="radio" name="l4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Move them to GitHub Apps. A pipeline on a personal token breaks when that person leaves and carries all of their access.</p></li>
+  <li data-id="l5"><p class="q">Is there an agreed rule for dormant users? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-accounts-and-repositories/managing-users-in-your-enterprise/managing-dormant-users">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="l5" value="y"><span>Yes</span></label><label><input type="radio" name="l5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Agree one, for example a quarterly review. Dormant members still use a licence.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="audit">
 <summary><span class="n">6</span>Audit and compliance</summary>
+<div class="body">
 <p>An auditor wants three records that line up: the <b>ticket</b> (why, who approved), the <b>IdP log</b> (group change) and the <b>GitHub audit log</b> (what happened).</p>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="a1"><span>Native audit log keeps web events for 180 days and Git events for 7 days. Is that enough?</span></label></li>
-  <li><label><input type="checkbox" data-id="a2"><span>Turn on audit log streaming early (for example to Azure Event Hubs or Blob Storage, then on to your SIEM). It only captures events from the day it is enabled.</span></label></li>
-  <li><label><input type="checkbox" data-id="a3"><span>Run access reviews on the Entra groups behind GitHub teams, with owners attesting.</span></label></li>
-  <li><label><input type="checkbox" data-id="a4"><span>Write the ticket reference into the group change so records can be joined.</span></label></li>
-  <li><label><input type="checkbox" data-id="a5"><span>Agree who reads alerts and how often reports go to the service owner.</span></label></li>
+<ul class="qs">
+  <li data-id="a1"><p class="q">Is the native audit log's retention enough for us: 180 days of web events, 7 days of Git events? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/concepts/security-and-compliance/audit-log-for-an-enterprise">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a1" value="y"><span>Yes</span></label><label><input type="radio" name="a1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Stream the audit log to storage or your SIEM to keep it longer.</p></li>
+  <li data-id="a2"><p class="q">Is audit log streaming switched on? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/monitoring-activity-in-your-enterprise/reviewing-audit-logs-for-your-enterprise/streaming-the-audit-log-for-your-enterprise">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a2" value="y"><span>Yes</span></label><label><input type="radio" name="a2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Turn it on early, for example to Azure Event Hubs or Blob Storage. It only captures events from the day it's enabled.</p></li>
+  <li data-id="a3"><p class="q">Do we keep Entra audit logs for longer than Entra's default? <a class="doc" href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/reference-reports-data-retention">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a3" value="y"><span>Yes</span></label><label><input type="radio" name="a3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Export them. Entra keeps audit and sign-in logs for 7 days on Free and 30 days on P1 or P2, so the group changes behind GitHub access disappear quickly.</p></li>
+  <li data-id="a4"><p class="q">Are access reviews run on the Entra groups behind GitHub teams? <a class="doc" href="https://learn.microsoft.com/en-us/entra/id-governance/access-reviews-overview">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a4" value="y"><span>Yes</span></label><label><input type="radio" name="a4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Set them up with group or repository owners as reviewers. Access reviews need ID Governance or Entra Suite.</p></li>
+  <li data-id="a5"><p class="q">Can we match a ticket to its Entra group change and the GitHub audit event?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a5" value="y"><span>Yes</span></label><label><input type="radio" name="a5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Record the ticket number with each group change so all three records can be joined.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="licensing">
 <summary><span class="n">7</span>Licensing and rollout at scale</summary>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="c1"><span>Know who uses a licence: members, outside collaborators on private or internal repos, dormant members, and pending invites (unless on usage-based billing or managed users).</span></label></li>
-  <li><label><input type="checkbox" data-id="c2"><span>Visual Studio subscribers use their bundled licence automatically when a verified email on their GitHub account matches their UPN, so invite people at their UPN.</span></label></li>
-  <li><label><input type="checkbox" data-id="c3"><span>Usage-based licences: pay monthly for the seats actually used instead of a fixed count. Volume agreements can switch at renewal, and you can pay through Azure. Anyone who held a seat during the month is billed for that month.</span></label></li>
-  <li><label><input type="checkbox" data-id="c4"><span>Download the licence usage report and reconcile it against the IdP before any migration.</span></label></li>
+<div class="body">
+<ul class="qs">
+  <li data-id="c1"><p class="q">Do we know who is using a licence today? <a class="doc" href="https://docs.github.com/en/billing/reference/github-license-users">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="c1" value="y"><span>Yes</span></label><label><input type="radio" name="c1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Download the licence usage report. Members, outside collaborators on private or internal repositories and dormant members all count. Pending invitations count too, unless you're on usage-based billing or managed users.</p></li>
+  <li data-id="c2"><p class="q">Are Visual Studio subscribers invited at their Entra UPN? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/billing/concepts/enterprise-billing/visual-studio-subs">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="c2" value="y"><span>Yes</span></label><label><input type="radio" name="c2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Invite them at their UPN. The bundled licence is used only when a verified email on their GitHub account matches it; otherwise they use a separate licence.</p></li>
+  <li data-id="c3"><p class="q">Can we add a user without removing someone else? <a class="doc" href="https://docs.github.com/en/billing/concepts/enterprise-billing/usage-based-licenses">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="c3" value="y"><span>Yes</span></label><label><input type="radio" name="c3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Consider usage-based licences: pay monthly for the seats in use instead of a fixed count, payable through Azure. Anyone who held a seat during the month is billed for that month.</p></li>
+  <li data-id="c4"><p class="q">Has the licence report been reconciled against the IdP? <a class="doc" href="https://docs.github.com/en/billing/reference/github-license-users">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="c4" value="y"><span>Yes</span></label><label><input type="radio" name="c4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Do it before any migration. Every GitHub user should match an IdP identity; anyone who doesn't needs an owner or removal.</p></li>
 </ul>
 <p class="warn"><b>Watch out:</b> a fixed seat cap pushes teams to remove someone to make room. Usage-based licensing plus reviews removes that pressure without losing control.</p>
+</div>
 </details>
 
 <details id="cost">
 <summary><span class="n">8</span>Cost: what else gets billed</summary>
+<div class="body">
 <p>The seat is only part of the bill. Everything below has its own meter and needs an owner and a budget.</p>
 <table>
   <tr><th>Product</th><th>How it's billed</th></tr>
@@ -129,38 +257,76 @@
   <tr><td>Secret Protection / Code Security</td><td>Two Advanced Security products, billed per unique active committer over 90 days.</td></tr>
   <tr><td>Codespaces, Packages, Git LFS</td><td>Metered usage.</td></tr>
 </table>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="k1"><span>Connect one Azure subscription, or a payment method, and name its cost owner.</span></label></li>
-  <li><label><input type="checkbox" data-id="k2"><span>Create cost centers and budgets per business unit before turning on metered products. Cost centers cover metered usage only, not volume seats, and each can bill its own Azure subscription.</span></label></li>
-  <li><label><input type="checkbox" data-id="k3"><span>Check the AI credits paid-usage policy and spending limits before rolling Copilot out.</span></label></li>
+<ul class="qs">
+  <li data-id="k1"><p class="q">Is there one named owner for the GitHub bill and its payment method or Azure subscription? <a class="doc" href="https://docs.github.com/en/billing/how-tos/set-up-payment/connect-azure-sub">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="k1" value="y"><span>Yes</span></label><label><input type="radio" name="k1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Name one. Metered products such as Copilot usage and Actions can be billed through a connected Azure subscription.</p></li>
+  <li data-id="k2"><p class="q">Are cost centers and budgets in place before metered products are turned on? <a class="doc" href="https://docs.github.com/en/billing/concepts/cost-centers">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="k2" value="y"><span>Yes</span></label><label><input type="radio" name="k2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Create them per business unit first. Cost centers cover metered usage only, not volume seats, and each can bill its own Azure subscription.</p></li>
+  <li data-id="k3"><p class="q">Have we chosen a Copilot plan and set the AI credit spending policy? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/copilot/get-started/whats-changing-with-github-enterprise-and-copilot">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="k3" value="y"><span>Yes</span></label><label><input type="radio" name="k3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Decide before rollout. Plans differ in price and included AI credits, and extra usage is metered.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="itsm">
 <summary><span class="n">9</span>ITSM and fulfilment</summary>
+<div class="body">
 <p>Keep the ITSM tool as the system of record. Let the IdP do the granting. Avoid a person clicking in GitHub.</p>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="t1"><span>Request form captures role, business reason, sponsor (for external users) and expiry.</span></label></li>
-  <li><label><input type="checkbox" data-id="t2"><span>Approvals: line manager first, then the accountable owner.</span></label></li>
-  <li><label><input type="checkbox" data-id="t3"><span>Fulfilment changes an Entra group, by automation or by an Entra access package, never by inviting directly in GitHub.</span></label></li>
-  <li><label><input type="checkbox" data-id="t4"><span>The ticket closes only after provisioning is confirmed, with evidence attached.</span></label></li>
-  <li><label><input type="checkbox" data-id="t5"><span>Removal requests follow the same path, in reverse.</span></label></li>
+<ul class="qs">
+  <li data-id="t1"><p class="q">Does the request form capture role, business reason, sponsor (for external users) and expiry?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="t1" value="y"><span>Yes</span></label><label><input type="radio" name="t1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Add those fields. Approvers, reviewers and auditors all need them later.</p></li>
+  <li data-id="t2"><p class="q">Do approvals go to the line manager first, then the accountable owner? <a class="doc" href="https://learn.microsoft.com/en-us/entra/id-governance/entitlement-management-overview">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="t2" value="y"><span>Yes</span></label><label><input type="radio" name="t2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Use two stages: the manager confirms the person and the need, the owner confirms the access. Entra access packages support multi-stage approval.</p></li>
+  <li data-id="t3"><p class="q">Does fulfilment change an Entra group, rather than someone inviting people in GitHub? <a class="doc" href="https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/assign-user-or-group-access-portal">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="t3" value="y"><span>Yes</span></label><label><input type="radio" name="t3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Change the group instead. Direct invites bypass the IdP, leave accounts unlinked and aren't removed automatically.</p></li>
+  <li data-id="t4"><p class="q">Does a ticket close only after provisioning is confirmed, with evidence attached?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="t4" value="y"><span>Yes</span></label><label><input type="radio" name="t4" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Close on evidence: the group change and the GitHub audit event. That's what turns the ticket into an audit record.</p></li>
+  <li data-id="t5"><p class="q">Do removal requests follow the same path?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="t5" value="y"><span>Yes</span></label><label><input type="radio" name="t5" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Run removals through the same flow in reverse, so they're approved and evidenced too.</p></li>
 </ul>
+</div>
 </details>
 
 <details id="rollout">
 <summary><span class="n">10</span>Pilot and phased rollout</summary>
+<div class="body">
 <ol class="phases">
-  <li><b>Prerequisites</b>: owner named, platform decision made, IdP groups and catalogue drafted, streaming on, recovery codes stored.</li>
-  <li><b>Pilot</b>: one organization, two or three teams, internal users and at least one external user. Run the full request-to-removal flow end to end.</li>
-  <li><b>Expand</b>: one organization or business unit at a time. Reconcile licences after each wave.</li>
-  <li><b>Run</b>: quarterly access and licence reviews, monthly cost check, yearly catalogue review.</li>
+  <li><b>Prerequisites</b> <span>owner named, platform decision made, IdP groups and catalogue drafted, streaming on, recovery codes stored.</span></li>
+  <li><b>Pilot</b> <span>one organization, two or three teams, internal users and at least one external user. Run the full request-to-removal flow end to end.</span></li>
+  <li><b>Expand</b> <span>one organization or business unit at a time. Reconcile licences after each wave.</span></li>
+  <li><b>Run</b> <span>quarterly access and licence reviews, monthly cost check, yearly catalogue review.</span></li>
 </ol>
-<ul class="check">
-  <li><label><input type="checkbox" data-id="o1"><span>Rollback is defined for each phase, for example disabling SCIM or reverting app assignments without locking out owners.</span></label></li>
-  <li><label><input type="checkbox" data-id="o2"><span>Pilot success criteria agreed up front: time to grant, time to remove, evidence complete.</span></label></li>
-  <li><label><input type="checkbox" data-id="o3"><span>Decisions that stay with the organization are listed with an owner and a date.</span></label></li>
+<ul class="qs">
+  <li data-id="o1"><p class="q">Is rollback defined for each phase? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/managing-recovery-codes-for-your-enterprise/downloading-your-enterprise-accounts-single-sign-on-recovery-codes">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="o1" value="y"><span>Yes</span></label><label><input type="radio" name="o1" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Define it, for example how to turn off SCIM or revert app assignments without locking owners out. Keep the recovery codes at hand.</p></li>
+  <li data-id="o2"><p class="q">Are the pilot's success criteria agreed up front?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="o2" value="y"><span>Yes</span></label><label><input type="radio" name="o2" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> Agree them, for example time to grant, time to remove and complete evidence.</p></li>
+  <li data-id="o3"><p class="q">Is every decision that stays with the organization listed with an owner and a date?</p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="o3" value="y"><span>Yes</span></label><label><input type="radio" name="o3" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b></p>
+    <p class="a if-n fix"><b>Recommendation:</b> List them. Open decisions without an owner stall the rollout.</p></li>
 </ul>
+</div>
 </details>
 </main>
 
@@ -168,12 +334,20 @@
   <p>Generic guidance, not tied to any organization. Products and prices change, so check the <a href="ledger.html">evidence ledger</a> and confirm account-specific terms with your account team.</p>
 </footer>
 <script>
-const boxes=[...document.querySelectorAll('input[data-id]')],K='ghe-field-guide';
+const items=[...document.querySelectorAll('.qs li')],K='ghe-field-guide-v2';
 let s=JSON.parse(localStorage.getItem(K)||'{}');
-const draw=()=>{const n=boxes.filter(b=>b.checked).length;count.textContent=n;total.textContent=boxes.length;bar.style.width=(100*n/boxes.length)+'%'};
-boxes.forEach(b=>{b.checked=!!s[b.dataset.id];b.onchange=()=>{s[b.dataset.id]=b.checked;localStorage.setItem(K,JSON.stringify(s));draw()}});
-reset.onclick=()=>{s={};localStorage.removeItem(K);boxes.forEach(b=>b.checked=false);draw()};
-document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{document.querySelector(a.getAttribute('href')).open=true});
+const secs=[...document.querySelectorAll('main details')],links=[...document.querySelectorAll('nav a')],wide=matchMedia('(min-width:1024px)');
+const link=d=>links.find(a=>a.hash==='#'+d.id);
+const fix=li=>li.dataset.a&&li.querySelector('.if-'+li.dataset.a).classList.contains('fix');
+links.forEach(a=>a.insertAdjacentHTML('beforeend','<span class="c"></span>'));
+const draw=()=>{const n=items.filter(li=>li.dataset.a).length;count.textContent=n;total.textContent=items.length;todo.textContent=items.filter(fix).length;bar.style.width=(100*n/items.length)+'%';
+secs.forEach(d=>{const q=items.filter(li=>d.contains(li)),k=q.filter(li=>li.dataset.a).length,a=link(d);a.lastChild.textContent=k+'/'+q.length;a.classList.toggle('done',k===q.length);a.classList.toggle('fix',q.some(fix))})};
+items.forEach(li=>{const id=li.dataset.id;if(s[id])li.dataset.a=s[id];li.querySelectorAll('input').forEach(r=>{r.checked=s[id]===r.value;r.onchange=()=>{s[id]=li.dataset.a=r.value;localStorage.setItem(K,JSON.stringify(s));draw()}})});
+reset.onclick=()=>{s={};localStorage.removeItem(K);items.forEach(li=>{delete li.dataset.a;li.querySelectorAll('input').forEach(r=>r.checked=false)});draw()};
+const fit=()=>{if(wide.matches)secs.forEach(d=>d.open=true)};fit();wide.addEventListener('change',fit);
+document.querySelectorAll('summary').forEach(x=>x.addEventListener('click',e=>{if(wide.matches)e.preventDefault()}));
+const spy=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)links.forEach(a=>a.classList.toggle('on',a===link(e.target)))}),{rootMargin:'-15% 0px -75% 0px'});secs.forEach(d=>spy.observe(d));
+links.forEach(a=>a.onclick=()=>{document.querySelector(a.hash).open=true});
 if(location.hash){const d=document.querySelector(location.hash);if(d&&d.tagName==='DETAILS')d.open=true}
 draw();
 </script>
