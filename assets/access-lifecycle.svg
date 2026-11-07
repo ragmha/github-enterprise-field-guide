@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 602" role="img" aria-labelledby="t">
+<title id="t">Access lifecycle: request, approvals, Entra group change, provisioning, evidence, review, removal</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:#0f172a}.s{font-size:12px;fill:#334155}.b{font-weight:600}.l{stroke:#475569;stroke-width:1.5;fill:none}</style>
+<rect width="360" height="602" fill="#fff"/>
+<rect x="10" y="10" width="290" height="52" rx="10" fill="#dbeafe" stroke="#475569"/><text x="155" y="32.099999999999994" text-anchor="middle" font-size="13" class="b">1 · Request in ITSM</text><text x="155" y="49" text-anchor="middle" font-size="13">who, what, why, expiry</text>
+<path class="l" d="M155 62L155 84" marker-end="url(#a)"/>
+<rect x="10" y="84" width="290" height="52" rx="10" fill="#f1f5f9" stroke="#475569"/><text x="155" y="106.1" text-anchor="middle" font-size="13" class="b">2 · Line manager confirms</text><text x="155" y="123" text-anchor="middle" font-size="13">person and business need</text>
+<path class="l" d="M155 136L155 158" marker-end="url(#a)"/>
+<rect x="10" y="158" width="290" height="52" rx="10" fill="#f1f5f9" stroke="#475569"/><text x="155" y="180.10000000000002" text-anchor="middle" font-size="13" class="b">3 · Owner approves</text><text x="155" y="197.00000000000003" text-anchor="middle" font-size="13">repo, project or platform owner</text>
+<path class="l" d="M155 210L155 232" marker-end="url(#a)"/>
+<rect x="10" y="232" width="290" height="52" rx="10" fill="#fef3c7" stroke="#475569"/><text x="155" y="254.10000000000002" text-anchor="middle" font-size="13" class="b">4 · Entra group change</text><text x="155" y="271" text-anchor="middle" font-size="13">ticket reference recorded</text>
+<path class="l" d="M155 284L155 306" marker-end="url(#a)"/>
+<rect x="10" y="306" width="290" height="52" rx="10" fill="#dcfce7" stroke="#475569"/><text x="155" y="328.1" text-anchor="middle" font-size="13" class="b">5 · Provisioned to GitHub</text><text x="155" y="345" text-anchor="middle" font-size="13">SCIM / team sync, no manual invites</text>
+<path class="l" d="M155 358L155 380" marker-end="url(#a)"/>
+<rect x="10" y="380" width="290" height="52" rx="10" fill="#f1f5f9" stroke="#475569"/><text x="155" y="402.1" text-anchor="middle" font-size="13" class="b">6 · Evidence + close</text><text x="155" y="419" text-anchor="middle" font-size="13">ticket, Entra log, GitHub audit log</text>
+<path class="l" d="M155 432L155 454" marker-end="url(#a)"/>
+<rect x="10" y="454" width="290" height="52" rx="10" fill="#ede9fe" stroke="#475569"/><text x="155" y="476.1" text-anchor="middle" font-size="13" class="b">7 · Periodic review</text><text x="155" y="493" text-anchor="middle" font-size="13">access and licence, owner attests</text>
+<path class="l" d="M155 506L155 528" marker-end="url(#a)"/>
+<rect x="10" y="528" width="290" height="52" rx="10" fill="#fee2e2" stroke="#475569"/><text x="155" y="550.0999999999999" text-anchor="middle" font-size="13" class="b">8 · Remove</text><text x="155" y="566.9999999999999" text-anchor="middle" font-size="13">leaver, mover, expiry, inactivity</text>
+<path class="l" d="M300 554L340 554L340 258L304 258" marker-end="url(#a)"/>
+<text x="346" y="406" class="s b" transform="rotate(90 346 406)" text-anchor="middle">removal = group change</text>
+</svg>

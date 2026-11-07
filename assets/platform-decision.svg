@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 622" role="img" aria-labelledby="t">
+<title id="t">Decision path: data residency, self-hosting, managed users, personal accounts</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:#0f172a}.s{font-size:12px;fill:#334155}.b{font-weight:600}.l{stroke:#475569;stroke-width:1.5;fill:none}</style>
+<rect width="360" height="622" fill="#fff"/>
+<rect x="10" y="10" width="340" height="52" rx="10" fill="#dbeafe" stroke="#475569"/><text x="180" y="31.799999999999997" text-anchor="middle" font-size="14" class="b">Must code and data stay in a</text><text x="180" y="50" text-anchor="middle" font-size="14">specific region (EU, AU, US, JP)?</text>
+<path class="l" d="M60 62L60 84" marker-end="url(#a)"/><text x="68" y="78" class="s b">Yes</text>
+<rect x="10" y="84" width="250" height="72" rx="10" fill="#ede9fe" stroke="#475569"/><text x="135" y="107.64999999999999" text-anchor="middle" font-size="13" class="b">GHE.com (data residency)</text><text x="135" y="124.55" text-anchor="middle" font-size="13">Managed users only, dedicated</text><text x="135" y="141.45" text-anchor="middle" font-size="13">subdomain, chosen region</text>
+<path class="l" d="M305 62L305 178" marker-end="url(#a)"/><text x="313" y="78" class="s b">No</text>
+<rect x="10" y="178" width="340" height="52" rx="10" fill="#dbeafe" stroke="#475569"/><text x="180" y="199.8" text-anchor="middle" font-size="14" class="b">Must you run the platform</text><text x="180" y="218" text-anchor="middle" font-size="14">on your own infrastructure?</text>
+<path class="l" d="M60 230L60 252" marker-end="url(#a)"/><text x="68" y="246" class="s b">Yes</text>
+<rect x="10" y="252" width="250" height="72" rx="10" fill="#fef3c7" stroke="#475569"/><text x="135" y="275.65000000000003" text-anchor="middle" font-size="13" class="b">GitHub Enterprise Server</text><text x="135" y="292.55" text-anchor="middle" font-size="13">You host, patch and scale it.</text><text x="135" y="309.45000000000005" text-anchor="middle" font-size="13">SAML + SCIM (GA from 3.17)</text>
+<path class="l" d="M305 230L305 346" marker-end="url(#a)"/><text x="313" y="246" class="s b">No</text>
+<rect x="10" y="346" width="340" height="52" rx="10" fill="#dbeafe" stroke="#475569"/><text x="180" y="367.79999999999995" text-anchor="middle" font-size="14" class="b">Should the IdP create and own</text><text x="180" y="385.99999999999994" text-anchor="middle" font-size="14">every account (no personal)?</text>
+<path class="l" d="M60 398L60 420" marker-end="url(#a)"/><text x="68" y="414" class="s b">Yes</text>
+<rect x="10" y="420" width="250" height="72" rx="10" fill="#dcfce7" stroke="#475569"/><text x="135" y="443.65000000000003" text-anchor="middle" font-size="13" class="b">GHEC with managed users (EMU)</text><text x="135" y="460.55" text-anchor="middle" font-size="13">New enterprise + migration.</text><text x="135" y="477.45000000000005" text-anchor="middle" font-size="13">No contributions outside it</text>
+<path class="l" d="M305 398L305 514" marker-end="url(#a)"/><text x="313" y="414" class="s b">No</text>
+<rect x="10" y="514" width="340" height="70" rx="10" fill="#f1f5f9" stroke="#475569"/><text x="180" y="536.65" text-anchor="middle" font-size="13" class="b">GHEC with personal accounts</text><text x="180" y="553.55" text-anchor="middle" font-size="13">Users bring github.com accounts.</text><text x="180" y="570.4499999999999" text-anchor="middle" font-size="13">SAML SSO; SCIM per organization only</text>
+<text x="10" y="596" class="s">All cloud options include the same enterprise</text><text x="10" y="612" class="s">account, audit log, Actions and Copilot controls.</text>
+</svg>

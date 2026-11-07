@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GitHub Enterprise field guide</title>
+<meta name="description" content="A phone-friendly pre-reading checklist for designing GitHub Enterprise as a governed service: platform choice, identity, roles, external users, audit, licensing, cost and ITSM.">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>GitHub Enterprise field guide</h1>
+  <p class="lede">A pre-reading checklist for turning GitHub into a governed service: who owns it, how people get in, what they can do, what it costs and how you prove it.</p>
+  <p class="meta">Checked against official docs on 7 Nov 2026 · <a href="ledger.html">Evidence ledger</a></p>
+  <div class="progress"><span id="bar"></span></div>
+  <p class="meta"><span id="count">0</span> of <span id="total">0</span> checked · saved on this device · <button id="reset" type="button">Reset</button></p>
+</header>
+
+<nav aria-label="Topics">
+  <a href="#platform">Platform</a><a href="#identity">Identity</a><a href="#roles">Roles</a><a href="#external">External users</a><a href="#lifecycle">On/offboarding</a><a href="#audit">Audit</a><a href="#licensing">Licensing</a><a href="#cost">Cost</a><a href="#itsm">ITSM</a><a href="#rollout">Rollout</a>
+</nav>
+
+<main>
+<details id="platform" open>
+<summary><span class="n">1</span>Choose the platform and account type</summary>
+<p>The biggest decision, and the hardest to reverse. Answer it first because identity, external access and migration effort all follow from it.</p>
+<a href="assets/platform-decision.svg"><img src="assets/platform-decision.svg" alt="Decision path from data residency to self-hosting to managed users to personal accounts"></a>
+<div class="compare">
+  <section><h3>GHEC, personal accounts</h3><p>Users sign in with their own github.com account. You add SAML SSO at the enterprise or organization level. SCIM is available only per organization. You can't control usernames.</p><p class="tag">Best when people must also work in open source with one account.</p></section>
+  <section><h3>GHEC, managed users (EMU)</h3><p>Your IdP creates every account (<code>handle_shortcode</code>) and suspends it on removal. SAML, or OIDC with Conditional Access when the IdP is Entra ID. Managed users can't contribute outside the enterprise.</p><p class="tag">Only for a new enterprise, so moving means migration.</p></section>
+  <section><h3>GHE.com (data residency)</h3><p>A managed-users enterprise on its own GHE.com subdomain, with data stored in the EU, Australia, US or Japan.</p><p class="tag">Choose it when data location is a hard requirement.</p></section>
+  <section><h3>GitHub Enterprise Server</h3><p>You run it on your own infrastructure: upgrades, backups, HA and runners. SAML with SCIM is generally available from 3.17. Managed users don't exist on Server, and cloud services such as Copilot stay in the cloud.</p><p class="tag">Choose it when it must be self-hosted.</p></section>
+</div>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="p1"><span>Do we have a data-residency or self-hosting requirement written down, or only a preference?</span></label></li>
+  <li><label><input type="checkbox" data-id="p2"><span>Do our people need to work in public open source with the same account?</span></label></li>
+  <li><label><input type="checkbox" data-id="p3"><span>Does every user, including external users, have an identity in our IdP?</span></label></li>
+  <li><label><input type="checkbox" data-id="p4"><span>If we choose managed users, have we sized the migration: repos, Actions runners, integrations and personal tokens?</span></label></li>
+  <li><label><input type="checkbox" data-id="p5"><span>Do we know which enterprise and organizations we have today, and whether any sit outside the enterprise?</span></label></li>
+</ul>
+<p class="warn"><b>Watch out:</b> you can't switch an existing enterprise to managed users. It means creating a new enterprise and migrating into it, so plan it as a project.</p>
+</details>
+
+<details id="identity">
+<summary><span class="n">2</span>Identity: sign-in and provisioning</summary>
+<p>Two separate controls. <b>SSO</b> decides who can sign in. <b>SCIM</b> decides who exists and in which groups. Without SCIM, removing someone in the IdP does not remove them from GitHub.</p>
+<a href="assets/identity-flow.svg"><img src="assets/identity-flow.svg" alt="Entra ID to GitHub enterprise app, then SSO and SCIM, then organizations, teams and repositories"></a>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="i1"><span>Assign Entra <b>groups</b> to the GitHub enterprise application, not individual users.</span></label></li>
+  <li><label><input type="checkbox" data-id="i2"><span>Check the Entra licence: group-based app assignment needs Entra ID P1. Access reviews need P2 or ID Governance.</span></label></li>
+  <li><label><input type="checkbox" data-id="i3"><span>Personal accounts: decide whether SAML sits at the enterprise or the organization level, and which organizations get SCIM.</span></label></li>
+  <li><label><input type="checkbox" data-id="i4"><span>Managed users with Entra: choose OIDC to get Conditional Access IP checks. One Entra tenant supports one OIDC enterprise.</span></label></li>
+  <li><label><input type="checkbox" data-id="i5"><span>Store SSO recovery codes and keep a break-glass owner path.</span></label></li>
+  <li><label><input type="checkbox" data-id="i6"><span>Link teams to Entra groups so membership follows the IdP: team sync with personal accounts, SCIM groups with managed users. Team sync doesn't create accounts, and the team must already exist.</span></label></li>
+</ul>
+<p class="warn"><b>Watch out:</b> with SCIM in place, invite and remove people <i>only</i> from the IdP. Manual invites leave accounts unlinked and break automatic removal. Organization-level SCIM also depends on an OAuth app authorised by a dedicated owner account, which uses a licence.</p>
+</details>
+
+<details id="roles">
+<summary><span class="n">3</span>Roles and authorization</summary>
+<p>A role catalogue is a short table: role, layer, what it allows, who approves it and how often it's reviewed.</p>
+<a href="assets/role-layers.svg"><img src="assets/role-layers.svg" alt="Nested layers: enterprise, organization, team, repository with their roles"></a>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="r1"><span>Name at least two enterprise owners, and keep the role for platform admins only.</span></label></li>
+  <li><label><input type="checkbox" data-id="r2"><span>Set organization base permissions low (none or read). Grant more through teams.</span></label></li>
+  <li><label><input type="checkbox" data-id="r3"><span>Map each catalogue role to one Entra group, then to one GitHub team or role.</span></label></li>
+  <li><label><input type="checkbox" data-id="r4"><span>Define repository owner (admin), maintainer (maintain), contributor (write) and reader (read).</span></label></li>
+  <li><label><input type="checkbox" data-id="r5"><span>Decide whether custom organization or repository roles are needed. Enterprise custom roles are in preview.</span></label></li>
+</ul>
+</details>
+
+<details id="external">
+<summary><span class="n">4</span>External users</summary>
+<p>Partners and contractors are usually the riskiest group: they're hard to identify, hard to review and easy to forget.</p>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="e1"><span>Every external user has a corporate identity in the IdP (member or guest), a named sponsor and an expiry date.</span></label></li>
+  <li><label><input type="checkbox" data-id="e2"><span>Personal accounts: outside collaborators on private or internal repos each use a licence.</span></label></li>
+  <li><label><input type="checkbox" data-id="e3"><span>Managed users: use the guest collaborator role for vendors. Guests see internal repos only in organizations they belong to.</span></label></li>
+  <li><label><input type="checkbox" data-id="e4"><span>Expiry triggers removal automatically, with renewal requested through the same ITSM flow.</span></label></li>
+  <li><label><input type="checkbox" data-id="e5"><span>Decide whether partner work lives in its own organization or teams.</span></label></li>
+</ul>
+</details>
+
+<details id="lifecycle">
+<summary><span class="n">5</span>On- and offboarding</summary>
+<a href="assets/access-lifecycle.svg"><img src="assets/access-lifecycle.svg" alt="Eight steps from ITSM request through approvals, Entra group change, provisioning, evidence, review and removal"></a>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="l1"><span>Joiner: the request names the role from the catalogue, not a list of repos.</span></label></li>
+  <li><label><input type="checkbox" data-id="l2"><span>Mover: a role change swaps groups, so old access drops automatically.</span></label></li>
+  <li><label><input type="checkbox" data-id="l3"><span>Leaver: HR or contract end disables the IdP account, and SCIM suspends or removes the GitHub access.</span></label></li>
+  <li><label><input type="checkbox" data-id="l4"><span>Automations and pipelines run on GitHub Apps or service identities, not a person's token.</span></label></li>
+  <li><label><input type="checkbox" data-id="l5"><span>Inactivity rule agreed, for example dormant users reviewed every quarter.</span></label></li>
+</ul>
+</details>
+
+<details id="audit">
+<summary><span class="n">6</span>Audit and compliance</summary>
+<p>An auditor wants three records that line up: the <b>ticket</b> (why, who approved), the <b>IdP log</b> (group change) and the <b>GitHub audit log</b> (what happened).</p>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="a1"><span>Native audit log keeps web events for 180 days and Git events for 7 days. Is that enough?</span></label></li>
+  <li><label><input type="checkbox" data-id="a2"><span>Turn on audit log streaming early (for example to Azure Event Hubs or Blob Storage, then on to your SIEM). It only captures events from the day it is enabled.</span></label></li>
+  <li><label><input type="checkbox" data-id="a3"><span>Run access reviews on the Entra groups behind GitHub teams, with owners attesting.</span></label></li>
+  <li><label><input type="checkbox" data-id="a4"><span>Write the ticket reference into the group change so records can be joined.</span></label></li>
+  <li><label><input type="checkbox" data-id="a5"><span>Agree who reads alerts and how often reports go to the service owner.</span></label></li>
+</ul>
+</details>
+
+<details id="licensing">
+<summary><span class="n">7</span>Licensing and rollout at scale</summary>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="c1"><span>Know who uses a licence: members, outside collaborators on private or internal repos, dormant members, and pending invites (unless on usage-based billing or managed users).</span></label></li>
+  <li><label><input type="checkbox" data-id="c2"><span>Visual Studio subscribers use their bundled licence automatically when a verified email on their GitHub account matches their UPN, so invite people at their UPN.</span></label></li>
+  <li><label><input type="checkbox" data-id="c3"><span>Usage-based licences: pay monthly for the seats actually used instead of a fixed count. Volume agreements can switch at renewal, and you can pay through Azure. Anyone who held a seat during the month is billed for that month.</span></label></li>
+  <li><label><input type="checkbox" data-id="c4"><span>Download the licence usage report and reconcile it against the IdP before any migration.</span></label></li>
+</ul>
+<p class="warn"><b>Watch out:</b> a fixed seat cap pushes teams to remove someone to make room. Usage-based licensing plus reviews removes that pressure without losing control.</p>
+</details>
+
+<details id="cost">
+<summary><span class="n">8</span>Cost: what else gets billed</summary>
+<p>The seat is only part of the bill. Everything below has its own meter and needs an owner and a budget.</p>
+<table>
+  <tr><th>Product</th><th>How it's billed</th></tr>
+  <tr><td>GitHub Enterprise</td><td>Per licence: volume, Visual Studio bundle or usage-based.</td></tr>
+  <tr><td>Copilot Business / Enterprise</td><td>$19 / $39 per user per month, including 1,900 / 3,900 pooled AI credits. Extra usage is metered.</td></tr>
+  <tr><td>Copilot access <span class="new">new</span></td><td>From 28 Oct 2026 through account teams: $0 seat for users with a GitHub Enterprise Cloud licence, $10 Standalone for others. All usage metered. It applies enterprise-wide and can't be mixed with Business or Enterprise.</td></tr>
+  <tr><td>Actions</td><td>Enterprise Cloud includes $300 of compute usage a month, now shown as money rather than minutes. Self-hosted runners are free.</td></tr>
+  <tr><td>Secret Protection / Code Security</td><td>Two Advanced Security products, billed per unique active committer over 90 days.</td></tr>
+  <tr><td>Codespaces, Packages, Git LFS</td><td>Metered usage.</td></tr>
+</table>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="k1"><span>Connect one Azure subscription, or a payment method, and name its cost owner.</span></label></li>
+  <li><label><input type="checkbox" data-id="k2"><span>Create cost centers and budgets per business unit before turning on metered products. Cost centers cover metered usage only, not volume seats, and each can bill its own Azure subscription.</span></label></li>
+  <li><label><input type="checkbox" data-id="k3"><span>Check the AI credits paid-usage policy and spending limits before rolling Copilot out.</span></label></li>
+</ul>
+</details>
+
+<details id="itsm">
+<summary><span class="n">9</span>ITSM and fulfilment</summary>
+<p>Keep the ITSM tool as the system of record. Let the IdP do the granting. Avoid a person clicking in GitHub.</p>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="t1"><span>Request form captures role, business reason, sponsor (for external users) and expiry.</span></label></li>
+  <li><label><input type="checkbox" data-id="t2"><span>Approvals: line manager first, then the accountable owner.</span></label></li>
+  <li><label><input type="checkbox" data-id="t3"><span>Fulfilment changes an Entra group, by automation or by an Entra access package, never by inviting directly in GitHub.</span></label></li>
+  <li><label><input type="checkbox" data-id="t4"><span>The ticket closes only after provisioning is confirmed, with evidence attached.</span></label></li>
+  <li><label><input type="checkbox" data-id="t5"><span>Removal requests follow the same path, in reverse.</span></label></li>
+</ul>
+</details>
+
+<details id="rollout">
+<summary><span class="n">10</span>Pilot and phased rollout</summary>
+<ol class="phases">
+  <li><b>Prerequisites</b>: owner named, platform decision made, IdP groups and catalogue drafted, streaming on, recovery codes stored.</li>
+  <li><b>Pilot</b>: one organization, two or three teams, internal users and at least one external user. Run the full request-to-removal flow end to end.</li>
+  <li><b>Expand</b>: one organization or business unit at a time. Reconcile licences after each wave.</li>
+  <li><b>Run</b>: quarterly access and licence reviews, monthly cost check, yearly catalogue review.</li>
+</ol>
+<ul class="check">
+  <li><label><input type="checkbox" data-id="o1"><span>Rollback is defined for each phase, for example disabling SCIM or reverting app assignments without locking out owners.</span></label></li>
+  <li><label><input type="checkbox" data-id="o2"><span>Pilot success criteria agreed up front: time to grant, time to remove, evidence complete.</span></label></li>
+  <li><label><input type="checkbox" data-id="o3"><span>Decisions that stay with the organization are listed with an owner and a date.</span></label></li>
+</ul>
+</details>
+</main>
+
+<footer>
+  <p>Generic guidance, not tied to any organization. Products and prices change, so check the <a href="ledger.html">evidence ledger</a> and confirm account-specific terms with your account team.</p>
+</footer>
+<script>
+const boxes=[...document.querySelectorAll('input[data-id]')],K='ghe-field-guide';
+let s=JSON.parse(localStorage.getItem(K)||'{}');
+const draw=()=>{const n=boxes.filter(b=>b.checked).length;count.textContent=n;total.textContent=boxes.length;bar.style.width=(100*n/boxes.length)+'%'};
+boxes.forEach(b=>{b.checked=!!s[b.dataset.id];b.onchange=()=>{s[b.dataset.id]=b.checked;localStorage.setItem(K,JSON.stringify(s));draw()}});
+reset.onclick=()=>{s={};localStorage.removeItem(K);boxes.forEach(b=>b.checked=false);draw()};
+document.querySelectorAll('nav a').forEach(a=>a.onclick=()=>{document.querySelector(a.getAttribute('href')).open=true});
+if(location.hash){const d=document.querySelector(location.hash);if(d&&d.tagName==='DETAILS')d.open=true}
+draw();
+</script>
+</body>
+</html>
