@@ -248,7 +248,7 @@ table { width: 100%; margin: 10px 0; border-collapse: collapse; font-size: .92re
 th, td { padding: 8px 6px; border-top: 1px solid var(--line); text-align: left; vertical-align: top }
 th { color: var(--mute); font-weight: 600 }
 td:first-child { width: 38%; font-weight: 600 }
-.new { padding: 1px 5px; border-radius: 4px; background: var(--success); color: #fff; font-size: .7rem; font-weight: 600 }
+.new { padding: 1px 5px; border-radius: 4px; background: #1a7f37; color: #fff; font-size: .7rem; font-weight: 600 }
 footer {
   grid-area: foot;
   padding: 12px 24px 24px;
