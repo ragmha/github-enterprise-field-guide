@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 280" role="img" aria-labelledby="audit-title audit-desc">
+<title id="audit-title">Audit log retention and streaming</title>
+<desc id="audit-desc">GitHub audit events remain in the native log for a limited time or are streamed to long-term storage or a SIEM.</desc>
+<defs><marker id="audit-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#475569"/></marker></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:#0f172a}.sub{font-size:13px;fill:#475569}.title{font-size:15px;font-weight:600}.path{stroke:#475569;stroke-width:2;fill:none}</style>
+<rect width="760" height="280" rx="8" fill="#fff"/>
+<path class="path" d="M206 140H246V88H292" marker-end="url(#audit-arrow)"/>
+<path class="path" d="M246 140V192H292" marker-end="url(#audit-arrow)"/>
+<path class="path" d="M492 192H552" marker-end="url(#audit-arrow)"/>
+<rect x="24" y="94" width="182" height="92" rx="10" fill="#f1f5f9" stroke="#475569"/>
+<text x="115" y="127" text-anchor="middle" class="title">GitHub audit log</text>
+<text x="115" y="151" text-anchor="middle" class="sub">enterprise + organization</text>
+<rect x="292" y="42" width="200" height="92" rx="10" fill="#dbeafe" stroke="#475569"/>
+<text x="392" y="76" text-anchor="middle" class="title">Native retention</text>
+<text x="392" y="100" text-anchor="middle" class="sub">web: 180 days · Git: 7 days</text>
+<rect x="292" y="146" width="200" height="92" rx="10" fill="#ede9fe" stroke="#475569"/>
+<text x="392" y="180" text-anchor="middle" class="title">Audit log stream</text>
+<text x="392" y="204" text-anchor="middle" class="sub">events from enablement onward</text>
+<rect x="552" y="146" width="184" height="92" rx="10" fill="#dcfce7" stroke="#475569"/>
+<text x="644" y="180" text-anchor="middle" class="title">Long-term review</text>
+<text x="644" y="204" text-anchor="middle" class="sub">storage or SIEM</text>
+<text x="24" y="264" class="sub">Enable streaming before the first event you may need later.</text>
+</svg>

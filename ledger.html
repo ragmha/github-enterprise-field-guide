@@ -3,14 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Evidence ledger · GitHub Enterprise field guide</title>
+<title>Evidence ledger · GitHub Enterprise platform governance</title>
 <link rel="icon" href="data:,">
+<script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
-<p class="meta"><a href="./">← Back to the checklist</a></p>
+<body class="ledger-page">
+<header class="topbar">
+  <p class="breadcrumb"><a href="./">GitHub Enterprise</a><span aria-hidden="true">/</span><span aria-current="page">Evidence ledger</span></p>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
+</header>
+<main class="ledger-content">
+<p class="meta"><a href="./">← Back to platform governance</a></p>
 <h1>Evidence ledger</h1>
 <p>Every product or price claim in the guide, with its official source. Checked on 7 Nov 2026.</p>
+<p class="meta">This checklist focuses on the <a href="https://learn.github.com/well-architected/governance/overview">Governance</a> and <a href="https://learn.github.com/well-architected/architecture/overview">Architecture</a> pillars of <a href="https://learn.github.com/well-architected/">GitHub Well-Architected</a>.</p>
 <p class="meta"><span class="status s-f">Page read</span> the full page was read. <span class="status s-e">Docs excerpt</span> confirmed from an official docs excerpt; read the page before quoting it.</p>
 <p class="warn"><b>Moving fast:</b> Copilot and Actions billing changed in 2026 (AI credits, compute usage shown as money). Recheck these rows before any commercial conversation.</p>
 <table class="ledger">
@@ -40,6 +47,7 @@
 <tr><td>Cost</td><td>Secret Protection and Code Security are billed per unique active committer over the last 90 days.<br><a href="https://docs.github.com/en/billing/concepts/product-billing/github-advanced-security">docs.github.com/…/github-advanced-security</a> <span class="status s-e">Docs excerpt</span></td></tr>
 <tr><td>Cost</td><td>Cost centers attribute metered usage to business units, can bill a separate Azure subscription and take budgets. They don't apply to volume seats.<br><a href="https://docs.github.com/en/billing/concepts/cost-centers">docs.github.com/…/cost-centers</a> <span class="status s-e">Docs excerpt</span></td></tr>
 </table>
+</main>
 <footer><p>Found something out of date? Open an issue on the repository.</p></footer>
 </body>
 </html>

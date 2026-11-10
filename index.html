@@ -3,29 +3,39 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>GitHub Enterprise field guide</title>
-<meta name="description" content="A phone-friendly pre-reading checklist for designing GitHub Enterprise as a governed service: platform choice, identity, roles, external users, audit, licensing, cost and ITSM.">
+<title>GitHub Enterprise platform governance</title>
+<meta name="description" content="A practical checklist for designing GitHub Enterprise as a governed service: platform choice, identity, roles, external users, audit, licensing, cost and ITSM.">
 <link rel="icon" href="data:,">
+<script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body class="guide">
-<header>
-  <h1>GitHub Enterprise field guide</h1>
-  <p class="lede">Answer yes or no to see whether you're on track to run GitHub as a governed service: who owns it, how people get in, what they can do, what it costs and how you prove it. Every recommendation links to the official docs, which stay the source of truth.</p>
-  <p class="meta">Checked against official docs on 7 Nov 2026 · <a href="ledger.html">Evidence ledger</a></p>
+<header class="topbar">
+  <p class="breadcrumb"><a href="./">GitHub Enterprise</a><span aria-hidden="true">/</span><span aria-current="page">Platform governance</span></p>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">Dark mode</button>
 </header>
 
+<div class="page-layout">
 <aside>
+<p class="sidebar-title">Platform governance</p>
+<p class="sidebar-label">In this assessment</p>
 <div class="prog">
 <div class="progress"><span id="bar"></span></div>
 <p class="meta"><span id="count">0</span> of <span id="total">0</span> answered · <span id="todo">0</span> to act on · saved on this device · <button id="reset" type="button">Reset</button></p>
 </div>
-<nav aria-label="Topics">
+<nav aria-label="Assessment sections">
   <a href="#platform">Platform</a><a href="#identity">Identity</a><a href="#roles">Roles</a><a href="#external">External users</a><a href="#lifecycle">On/offboarding</a><a href="#audit">Audit</a><a href="#licensing">Licensing</a><a href="#cost">Cost</a><a href="#itsm">ITSM</a><a href="#rollout">Rollout</a>
 </nav>
 </aside>
 
 <main>
+<section class="intro">
+  <h1>GitHub Enterprise platform governance</h1>
+  <p class="lede">A decision-led assessment for running GitHub Enterprise as a governed service: who owns it, how people get access, what they can do, what it costs and how you prove it. Each recommendation links to official documentation, which remains the source of truth.</p>
+  <p class="meta">Checked against official docs on 7 Nov 2026 · <a href="ledger.html">Evidence ledger</a></p>
+  <p class="scope-note"><b>Where this fits:</b> This assessment focuses on GitHub Well-Architected <a href="https://learn.github.com/well-architected/governance/overview">Governance</a> and <a href="https://learn.github.com/well-architected/architecture/overview">Architecture</a>—especially enterprise boundaries, identity, access, audit and operating decisions. It is not a full review of application security, collaboration or developer productivity; use the <a href="https://learn.github.com/well-architected/">full framework</a> for those pillars.</p>
+</section>
+
 <details id="platform" open>
 <summary><span class="n">1</span>Choose the platform and account type</summary>
 <div class="body">
@@ -128,6 +138,10 @@
     <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r5" value="y"><span>Yes</span></label><label><input type="radio" name="r5" value="n"><span>No</span></label></div>
     <p class="a if-y ok"><b>On track.</b> Fewer roles are easier to review.</p>
     <p class="a if-n fork"><b>Leads to:</b> Use custom repository or organization roles. Enterprise custom roles are still in preview, so don't depend on them yet.</p></li>
+  <li data-id="r6"><p class="q">Are minimum branch and repository controls enforced with rulesets? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/organizations/managing-organization-settings/creating-rulesets-for-repositories-in-your-organization">Docs</a></p>
+    <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="r6" value="y"><span>Yes</span></label><label><input type="radio" name="r6" value="n"><span>No</span></label></div>
+    <p class="a if-y ok"><b>On track.</b> Keep the required reviews and status checks aligned with your repository risk.</p>
+    <p class="a if-n fix"><b>Recommendation:</b> Define a baseline with organization rulesets, then document any repository-level exceptions.</p></li>
 </ul>
 </div>
 </details>
@@ -194,6 +208,10 @@
 <summary><span class="n">6</span>Audit and compliance</summary>
 <div class="body">
 <p>An auditor wants three records that line up: the <b>ticket</b> (why, who approved), the <b>IdP log</b> (group change) and the <b>GitHub audit log</b> (what happened).</p>
+<figure class="diagram wide">
+  <a href="assets/audit-stream.svg"><img src="assets/audit-stream.svg" alt="GitHub audit events are kept in the native log for limited retention or streamed to long-term storage or a SIEM."></a>
+  <figcaption>Streaming starts when enabled; it does not backfill earlier events.</figcaption>
+</figure>
 <ul class="qs">
   <li data-id="a1"><p class="q">Is the native audit log's retention enough for us: 180 days of web events, 7 days of Git events? <a class="doc" href="https://docs.github.com/en/enterprise-cloud@latest/admin/concepts/security-and-compliance/audit-log-for-an-enterprise">Docs</a></p>
     <div class="yn" role="radiogroup" aria-label="Answer"><label><input type="radio" name="a1" value="y"><span>Yes</span></label><label><input type="radio" name="a1" value="n"><span>No</span></label></div>
@@ -248,6 +266,10 @@
 <summary><span class="n">8</span>Cost: what else gets billed</summary>
 <div class="body">
 <p>The seat is only part of the bill. Everything below has its own meter and needs an owner and a budget.</p>
+<figure class="diagram wide">
+  <a href="assets/billing-flow.svg"><img src="assets/billing-flow.svg" alt="GitHub usage separates into user seats and metered products; assign a billing owner and use cost centers and budgets for metered spend."></a>
+  <figcaption>Cost centers allocate metered usage; they do not apply to volume seats.</figcaption>
+</figure>
 <table>
   <tr><th>Product</th><th>How it's billed</th></tr>
   <tr><td>GitHub Enterprise</td><td>Per licence: volume, Visual Studio bundle or usage-based.</td></tr>
@@ -329,9 +351,10 @@
 </div>
 </details>
 </main>
+</div>
 
 <footer>
-  <p>Generic guidance, not tied to any organization. Products and prices change, so check the <a href="ledger.html">evidence ledger</a> and confirm account-specific terms with your account team.</p>
+  <p>Generic guidance, not tied to any organization. Products and prices change, so check the <a href="ledger.html">evidence ledger</a> and confirm account-specific terms with your account team. For broader design decisions, see <a href="https://learn.github.com/well-architected/">GitHub Well-Architected</a>.</p>
 </footer>
 <script>
 const items=[...document.querySelectorAll('.qs li')],K='ghe-field-guide-v2';
