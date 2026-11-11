@@ -1,56 +1,59 @@
 :root {
   color-scheme: light;
-  --fg: #262630;
-  --mute: #626271;
-  --bg: #f8f9fb;
+  --fg: #1f2328;
+  --mute: #59636e;
+  --bg: #f3f5f7;
   --surface: #fff;
-  --sidebar: #f2f3f6;
-  --line: #d9dbe3;
-  --acc: #702bfa;
-  --acc-strong: #6523e8;
-  --warn: #fff5e8;
-  --warnb: #a65d00;
-  --ok: #edf8f1;
+  --sidebar: #f6f8fa;
+  --line: #d1d9e0;
+  --acc: #0550ae;
+  --acc-strong: #1a7f37;
+  --warn: #fff8c5;
+  --warnb: #9a6700;
+  --ok: #dafbe1;
   --success: #1a7f37;
-  --fork: #f4efff;
-  --focus: #702bfa;
+  --fork: #ddf4ff;
+  --focus: #0969da;
+  --shadow: 0 1px 3px rgba(31, 35, 40, .08);
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --fg: #e8e8ed;
-  --mute: #b0b0bc;
-  --bg: #111216;
-  --surface: #191a20;
-  --sidebar: #17181e;
-  --line: #373840;
-  --acc: #c1a8ff;
-  --acc-strong: #6d35ec;
-  --warn: #332618;
-  --warnb: #e0a13c;
-  --ok: #18271d;
-  --success: #70c18a;
-  --fork: #211a30;
-  --focus: #c1a8ff;
+  --fg: #f0f6fc;
+  --mute: #9198a1;
+  --bg: #07090d;
+  --surface: #0d1117;
+  --sidebar: #0d1117;
+  --line: #3d444d;
+  --acc: #4493f8;
+  --acc-strong: #3fb950;
+  --warn: #3d2e00;
+  --warnb: #d29922;
+  --ok: #033a16;
+  --success: #3fb950;
+  --fork: rgba(56, 139, 253, .15);
+  --focus: #4493f8;
+  --shadow: 0 0 transparent;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     color-scheme: dark;
-    --fg: #e8e8ed;
-    --mute: #b0b0bc;
-    --bg: #111216;
-    --surface: #191a20;
-    --sidebar: #17181e;
-    --line: #373840;
-    --acc: #c1a8ff;
-    --acc-strong: #6d35ec;
-    --warn: #332618;
-    --warnb: #e0a13c;
-    --ok: #18271d;
-    --success: #70c18a;
-    --fork: #211a30;
-    --focus: #c1a8ff;
+    --fg: #f0f6fc;
+    --mute: #9198a1;
+    --bg: #07090d;
+    --surface: #0d1117;
+    --sidebar: #0d1117;
+    --line: #3d444d;
+    --acc: #4493f8;
+    --acc-strong: #3fb950;
+    --warn: #3d2e00;
+    --warnb: #d29922;
+    --ok: #033a16;
+    --success: #3fb950;
+    --fork: rgba(56, 139, 253, .15);
+    --focus: #4493f8;
+    --shadow: 0 0 transparent;
   }
 }
 
@@ -81,9 +84,9 @@ a:focus-visible, button:focus-visible, summary:focus-visible {
   justify-content: space-between;
   gap: 20px;
   padding: 8px clamp(16px, 3vw, 40px);
-  border-top: 3px solid var(--acc);
   border-bottom: 1px solid var(--line);
   background: var(--surface);
+  box-shadow: var(--shadow);
 }
 .breadcrumb { display: flex; align-items: center; gap: 14px; margin: 0; font-size: 1rem }
 .breadcrumb a { color: var(--mute); text-decoration: none }
@@ -160,7 +163,15 @@ nav a.on { font-weight: 600 }
 nav .c { margin-left: auto; color: var(--mute); font-size: .78rem; font-variant-numeric: tabular-nums }
 .guide main { min-width: 0; max-width: 1120px; margin: 0 auto; padding: 48px clamp(28px, 5vw, 84px) 72px }
 .intro { max-width: 78ch; margin: 0 0 48px }
-.intro h1 { max-width: 21ch; margin: 0 0 18px; font-size: clamp(2.2rem, 3.8vw, 3rem); letter-spacing: -.025em }
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--success);
+  font: 600 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.intro h1 { max-width: 24ch; margin: 0 0 18px; font-size: clamp(2.2rem, 4.2vw, 3.75rem); line-height: 1.05; letter-spacing: -.04em }
+.intro h1 span { color: var(--success) }
 .scope-note {
   margin: 24px 0 0;
   padding: 14px 16px;
@@ -170,19 +181,19 @@ nav .c { margin-left: auto; color: var(--mute); font-size: .78rem; font-variant-
   font-size: .96rem;
 }
 details {
-  margin: 0;
-  padding: 0 0 24px;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  border-radius: 0;
-  background: transparent;
+  margin: 0 0 12px;
+  padding: 0 20px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
   scroll-margin-top: 84px;
 }
 summary {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 24px 0 20px;
+  padding: 20px 0;
   font-size: 1.32rem;
   font-weight: 650;
   line-height: 1.35;
@@ -245,8 +256,9 @@ li[data-a="y"] .if-y, li[data-a="n"] .if-n { display: block }
 .phases li { margin: .5rem 0 }
 .phases b::after { content: ":" }
 table { width: 100%; margin: 10px 0; border-collapse: collapse; font-size: .92rem }
-th, td { padding: 8px 6px; border-top: 1px solid var(--line); text-align: left; vertical-align: top }
-th { color: var(--mute); font-weight: 600 }
+th, td { padding: 8px 10px; border: 1px solid var(--line); text-align: left; vertical-align: top }
+th { background: var(--sidebar); color: var(--mute); font-size: .78rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase }
+tbody tr:nth-child(even) { background: var(--sidebar) }
 td:first-child { width: 38%; font-weight: 600 }
 .new { padding: 1px 5px; border-radius: 4px; background: #1a7f37; color: #fff; font-size: .7rem; font-weight: 600 }
 footer {
@@ -264,7 +276,7 @@ footer {
 .ledger td:first-child, .ledger th.t { width: 24% }
 .ledger .status { white-space: nowrap }
 .s-f { background: var(--ok); color: var(--success) }
-.s-e { background: #eef2ff; color: #4338a8 }
+.s-e { background: var(--fork); color: var(--acc) }
 .ledger-page footer { max-width: 1040px; margin: 0 auto }
 @media (min-width: 1024px) {
   .guide details[open] summary { cursor: default }
@@ -302,7 +314,8 @@ footer {
   .guide main { padding: 28px 18px 48px }
   .intro { margin-bottom: 32px }
   .intro h1 { font-size: 2.1rem }
-  summary { padding: 20px 0 16px; font-size: 1.14rem }
+  details { padding: 0 14px 16px }
+  summary { padding: 18px 0 14px; font-size: 1.14rem }
   .n { width: 28px; height: 28px }
   table { font-size: .86rem }
   .ledger td:first-child, .ledger th.t { width: 28% }
